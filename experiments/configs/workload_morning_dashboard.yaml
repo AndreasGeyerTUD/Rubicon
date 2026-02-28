@@ -1,0 +1,57 @@
+# =============================================================================
+# Morning Dashboard Refresh
+# =============================================================================
+# Models the 9 AM spike when analysts open their browsers and dozens of
+# dashboards auto-refresh simultaneously. Heavily skewed toward simple
+# filter/aggregate queries (flight 1 & 2). Short burst, high concurrency.
+# =============================================================================
+
+name: "morning_dashboard_refresh"
+scale_factor: 100
+workers: 48
+iterations: 5
+output_file: "results/wl/results_morning_dashboard.csv"
+
+query_mix:
+  q_1_1: 35     # simple year/discount filter — most dashboards use this
+  q_1_2: 25     # date range filter
+  q_1_3: 15     # narrow filter variant
+  q_2_1: 15     # region-based aggregate
+  q_2_2: 5      # supplier region filter
+  q_2_3: 5      # city-level drill-down
+
+pattern:
+  type: phases
+  max_concurrent: 100
+
+  phases:
+    # Pre-spike: a few early birds
+    - name: early_birds
+      duration_s: 10
+      arrival:
+        model: poisson
+        rate: 5.0
+
+    # The main spike: everyone logs in within ~10 seconds
+    - name: dashboard_spike
+      duration_s: 10
+      arrival:
+        model: poisson
+        rate: 60.0
+
+    # Settling: dashboards loaded, occasional refreshes
+    - name: settling
+      duration_s: 10
+      arrival:
+        model: target_qps
+        start_rate: 60.0
+        end_rate: 20.0
+        variance: 0.1
+
+    # Steady trickle: auto-refresh every few seconds
+    - name: auto_refresh
+      duration_s: 15
+      arrival:
+        model: fixed_jitter
+        interval_ms: 50
+        jitter_ms: 200

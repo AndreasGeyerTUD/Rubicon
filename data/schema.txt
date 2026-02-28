@@ -1,0 +1,5 @@
+customer:c_custkey(int),c_name(str),c_address(str),c_city(str),c_nation(str),c_region(str),c_phone(str),c_mktsegment(str),dummy(str);
+date:d_datekey(date),d_date(str),d_dayofweek(str),d_month(str),d_year(int),d_yearmonthnum(int),d_yearmonth(str),d_daynuminweek(int),d_daynuminmonth(int),d_daynuminyear(int),d_monthnuminyear(int),d_weeknuminyear(int),d_sellingseason(str),d_lastdayinweekfl(bool),d_lastdayinmonthfl(bool),d_holidayfl(bool),d_weekdayfl(bool),dummy(str);
+part:p_partkey(int),p_name(str),p_mfgr(str),p_category(str),p_brand(str),p_color(str),p_type(str),p_size(int),p_container(str),dummy(str);
+supplier:s_suppkey(int),s_name(str),s_address(str),s_city(str),s_nation(str),s_region(str),s_phone(str),dummy(str);
+lineorder:lo_orderkey(int),lo_linenumber(int),lo_custkey(int),lo_partkey(int),lo_suppkey(int),lo_orderdate(date),lo_orderpriority(str),lo_shippriority(bool),lo_quantity(int),lo_extendedprice(int),lo_ordertotalprice(int),lo_discount(int),lo_revenue(int),lo_supplycost(int),lo_tax(int),lo_commitdate(date),lo_shipmode(str),dummy(str);

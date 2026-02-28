@@ -1,0 +1,35 @@
+# =============================================================================
+# Ad-Hoc Analyst Exploration
+# =============================================================================
+# Models 3-5 data analysts doing exploratory analysis. Each starts with
+# simple queries to orient themselves, then progressively runs heavier
+# analytical queries as they dig deeper. Long think times (reading results,
+# adjusting filters). Realistic for a Tuesday afternoon data investigation.
+# =============================================================================
+
+name: "adhoc_exploration"
+scale_factor: 100
+workers: 48
+iterations: 5
+output_file: "results/wl/results_adhoc_exploration.csv"
+
+# Mix reflects exploratory pattern: starts broad, goes deep
+query_mix:
+  q_1_1: 15     # quick sanity checks
+  q_1_2: 10
+  q_2_1: 15     # regional breakdowns
+  q_2_2: 15
+  q_2_3: 10     # city-level deep dives
+  q_3_1: 10     # cross-dimensional joins
+  q_3_2: 10
+  q_3_3: 5      # complex aggregations
+  q_3_4: 5
+  q_4_1: 5      # the heavy hitters — only when they find something interesting
+
+pattern:
+  type: virtual_users
+  num_users: 40              # 40 analysts working simultaneously
+  queries_per_user: 40       # each runs ~40 queries in a session
+  think_time_min_ms: 2000    # analysts read results carefully (2-10s think time)
+  think_time_max_ms: 10000
+  stagger_ms: 5000           # analysts don't all start at the same moment

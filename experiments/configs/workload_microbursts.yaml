@@ -1,0 +1,96 @@
+# =============================================================================
+# Periodic Micro-Bursts
+# =============================================================================
+# Models a BI tool that triggers dashboard refreshes on a timer — every
+# 30 seconds, a cluster of 10-15 queries fires simultaneously, then
+# the system goes quiet until the next cycle. Repeats several times.
+#
+# Tests the system's ability to handle repeated short spikes and recover
+# between them. Latency during bursts vs. baseline is the key metric.
+# =============================================================================
+
+name: "periodic_microbursts"
+scale_factor: 100
+workers: 48
+iterations: 5
+output_file: "results/wl/results_microbursts.csv"
+
+query_mix:
+  q_1_1: 25
+  q_1_2: 20
+  q_1_3: 15
+  q_2_1: 15
+  q_2_2: 10
+  q_2_3: 5
+  q_3_1: 5
+  q_3_2: 5
+
+pattern:
+  type: phases
+  max_concurrent: 100
+
+  phases:
+    # --- Cycle 1 ---
+    - name: burst_1
+      duration_s: 3
+      arrival:
+        model: poisson
+        rate: 50.0            # ~150 queries in 3 seconds
+
+    - name: quiet_1
+      duration_s: 30
+      arrival:
+        model: poisson
+        rate: 0.2             # ~5 trickle queries during quiet period
+
+    # --- Cycle 2 ---
+    - name: burst_2
+      duration_s: 3
+      arrival:
+        model: poisson
+        rate: 50.0
+
+    - name: quiet_2
+      duration_s: 30
+      arrival:
+        model: poisson
+        rate: 0.2
+
+    # --- Cycle 3 ---
+    - name: burst_3
+      duration_s: 3
+      arrival:
+        model: poisson
+        rate: 50.0
+
+    - name: quiet_3
+      duration_s: 30
+      arrival:
+        model: poisson
+        rate: 0.2
+
+    # --- Cycle 4 ---
+    - name: burst_4
+      duration_s: 3
+      arrival:
+        model: poisson
+        rate: 50.0
+
+    - name: quiet_4
+      duration_s: 30
+      arrival:
+        model: poisson
+        rate: 0.2
+
+    # --- Cycle 5 ---
+    - name: burst_5
+      duration_s: 3
+      arrival:
+        model: poisson
+        rate: 50.0
+
+    - name: quiet_5
+      duration_s: 30
+      arrival:
+        model: poisson
+        rate: 0.2

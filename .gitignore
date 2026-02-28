@@ -1,0 +1,10 @@
+build
+.vscode
+results
+.venv
+experiments/proto
+analyze_profile.csv
+data/binary
+data/csv
+data/ssb_generator
+__pycache__

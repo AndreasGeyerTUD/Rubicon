@@ -1,0 +1,71 @@
+# =============================================================================
+# Stress Test — Find Saturation Point
+# =============================================================================
+# Ramps load from low to very high over successive phases to determine
+# where the system saturates. Each phase holds a steady rate long enough
+# to get stable latency measurements, then steps up.
+#
+# Analyze results by phase to find the QPS where latency degrades.
+# =============================================================================
+
+name: "stress_test_saturation"
+scale_factor: 100
+workers: 48
+iterations: 5
+output_file: "results/wl/results_stress_test.csv"
+
+# Uniform mix — we want to stress the system evenly, not bias toward easy queries
+query_mix:
+  q_1_1: 10
+  q_1_2: 10
+  q_1_3: 10
+  q_2_1: 10
+  q_2_2: 10
+  q_2_3: 5
+  q_3_1: 10
+  q_3_2: 10
+  q_3_3: 5
+  q_3_4: 5
+  q_4_1: 5
+  q_4_2: 5
+  q_4_3: 5
+
+pattern:
+  type: phases
+  max_concurrent: 100
+
+  phases:
+    - name: baseline_10qps
+      duration_s: 5
+      arrival:
+        model: target_qps
+        rate: 10.0
+        variance: 0.05
+
+    - name: moderate_20qps
+      duration_s: 5
+      arrival:
+        model: target_qps
+        rate: 20.0
+        variance: 0.05
+
+    - name: high_30qps
+      duration_s: 5
+      arrival:
+        model: target_qps
+        rate: 30.0
+        variance: 0.05
+
+    - name: heavy_40qps
+      duration_s: 5
+      arrival:
+        model: target_qps
+        rate: 40.0
+        variance: 0.05
+
+    - name: extreme_50qps
+      duration_s: 5
+      arrival:
+        model: target_qps
+        rate: 50.0
+        variance: 0.05

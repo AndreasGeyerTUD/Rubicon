@@ -1,0 +1,85 @@
+# =============================================================================
+# Peak Hour Mixed Workload
+# =============================================================================
+# Models the busiest period: dashboard auto-refreshes, active analysts
+# exploring data, AND a scheduled report all hitting the system at once.
+# This is the "worst case realistic" scenario for capacity planning.
+#
+# Uses phases to layer different activity types over time.
+# =============================================================================
+
+name: "peak_hour_mixed"
+scale_factor: 100
+workers: 48
+iterations: 5
+output_file: "results/wl/results_peak_mixed.csv"
+
+# Blended mix across all query types
+query_mix:
+  q_1_1: 20     # dashboard filters
+  q_1_2: 15
+  q_1_3: 10
+  q_2_1: 10     # regional aggregates
+  q_2_2: 10
+  q_2_3: 5
+  q_3_1: 8      # multi-join analytics
+  q_3_2: 7
+  q_3_3: 5
+  q_3_4: 3
+  q_4_1: 3      # profit calculations
+  q_4_2: 2
+  q_4_3: 2
+
+pattern:
+  type: phases
+  max_concurrent: 100
+
+  phases:
+    # Warm-up: normal dashboard traffic
+    - name: normal_traffic
+      duration_s: 10
+      arrival:
+        model: poisson
+        rate: 10.0
+
+    # Ramp: more users coming online
+    - name: ramp_to_peak
+      duration_s: 10
+      arrival:
+        model: target_qps
+        start_rate: 10.0
+        end_rate: 30.0
+        variance: 0.1
+
+    # Peak: sustained high load, full query diversity
+    - name: peak_sustained
+      duration_s: 20
+      arrival:
+        model: poisson
+        rate: 30.0
+
+    # Report kicks in ON TOP of peak traffic — shifts mix heavily
+    - name: peak_plus_reporting
+      duration_s: 10
+      arrival:
+        model: poisson
+        rate: 60.0
+      query_mix:
+        q_1_1: 10     # dashboards still running
+        q_1_2: 10
+        q_3_1: 15     # report queries now dominate
+        q_3_2: 15
+        q_3_3: 15
+        q_3_4: 10
+        q_4_1: 10
+        q_4_2: 10
+        q_4_3: 5
+
+    # Traffic subsides
+    - name: post_peak
+      duration_s: 10
+      arrival:
+        model: target_qps
+        start_rate: 60.0
+        end_rate: 5.0
+        variance: 0.15

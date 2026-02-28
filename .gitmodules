@@ -1,0 +1,3 @@
+[submodule "ext/SIMDOperators"]
+	path = ext/SIMDOperators
+	url = git@github.com:db-tu-dresden/SIMDOperators.git
