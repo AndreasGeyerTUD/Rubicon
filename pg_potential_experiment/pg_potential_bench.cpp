@@ -5,7 +5,7 @@
 // vs. copying in chunks to local DRAM with overlapped compute.
 //
 // Design:
-//   - 10 GiB column of uint64_t on a remote NUMA node (CXL proxy)
+//   - 5 GiB column of uint64_t on a remote NUMA node (CXL proxy)
 //   - Each of the 48 CXL reader threads gets its own private copy on CXL
 //     to prevent L3 cache sharing from masking the CXL latency/bandwidth cost
 //   - 48 concurrent query threads, each computing sum over the column
@@ -14,7 +14,7 @@
 //   - When K > 0, a dedicated copy thread transfers data in chunks.
 //     DRAM readers process each chunk as soon as it arrives (pipelined).
 //   - The copy cost is fully overlapped with compute where possible.
-//   - NOTE: Requires 48 x 10 GiB = 480 GiB CXL + 10 GiB DRAM
+//   - NOTE: Requires 48 x 5 GiB = 480 GiB CXL + 5 GiB DRAM
 //
 // Build:
 //   cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build
@@ -50,7 +50,7 @@
 // Configuration
 // ============================================================================
 
-static constexpr size_t DATA_SIZE       = 5ULL * 1024 * 1024 * 1024; // 10 GiB
+static constexpr size_t DATA_SIZE       = 5ULL * 1024 * 1024 * 1024; // 5 GiB
 static constexpr size_t NUM_ELEMENTS    = DATA_SIZE / sizeof(uint64_t);
 static constexpr int    NUM_QUERIES     = 48;
 static constexpr int    K_STEP          = 2;
