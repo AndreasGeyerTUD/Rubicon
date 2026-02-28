@@ -89,3 +89,9 @@ option(GROUPER_PROFILING "Enable CSV timing for DagCollection::analyze" OFF)
 if(GROUPER_PROFILING)
     target_compile_definitions(grouper PRIVATE PROFILING_ENABLED)
 endif()
+
+# ── pg potential bench ────────────────────────────────────────
+add_executable(pg_potential_bench "pg_potential_experiment/pg_potential_bench.cpp")
+
+target_compile_options(pg_potential_bench PRIVATE -O3 -march=native -mavx512f)
+target_link_libraries(pg_potential_bench ${PTHREAD_LIB} ${NUMA_LIB})

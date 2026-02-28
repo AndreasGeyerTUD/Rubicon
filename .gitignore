@@ -8,3 +8,4 @@ data/binary
 data/csv
 data/ssb_generator
 __pycache__
+results.csv
